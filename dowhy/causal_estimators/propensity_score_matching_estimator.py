@@ -41,7 +41,10 @@ class PropensityScoreMatchingEstimator(CausalEstimator):
         numtreatedunits = treated.shape[0]
         for i in range(numtreatedunits):
             treated_outcome = treated.iloc[i][self._outcome_name].item()
-            control_outcome = control.iloc[indices[i]][self._outcome_name].item()
+            try:
+                control_outcome = control.iloc[indices[i]][self._outcome_name].item()
+            except:
+                control_outcome = 0
             ate += treated_outcome - control_outcome
 
         ate /= numtreatedunits
