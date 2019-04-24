@@ -37,7 +37,7 @@ class CausalEstimator:
 
         self.logger = logging.getLogger(__name__)
 
-    def estimate_effect(self, num_simulations):
+    def estimate_effect(self, num_simulations=1000):
         """TODO.
 
         More description.
