@@ -25,8 +25,8 @@ class PropensityScoreMatchingEstimator(CausalEstimator):
         self._data['propensity_score'] = propensity_score_model.predict(self._observed_common_causes)
 
         # this assumes a binary treatment regime
-        treated = self._data.loc[self._data[self._treatment_name] == 1]
-        control = self._data.loc[self._data[self._treatment_name] == 0]
+        treated = self._data.loc[self._data[self._data[self._treatment_name] == 1].index]
+        control = self._data.loc[self._data[self._data[self._treatment_name] == 0].index]
 
         control_neighbors = (
             NearestNeighbors(n_neighbors=1, algorithm='ball_tree')
