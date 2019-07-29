@@ -4,6 +4,7 @@ from statsmodels.nonparametric.kernel_density import KDEMultivariateConditional,
 from sklearn.preprocessing import LabelEncoder
 from pandas import get_dummies
 import numpy as np
+import logging
 
 
 def propensity_of_treatment_score(data, covariates, treatment, model='logistic', variable_types=None):
@@ -33,7 +34,6 @@ def state_propensity_score(data, covariates, treatments, variable_types=None):
                                                                              treatment,
                                                                              variable_types))
         elif variable_types[treatment] in ['c']:
-            logging.warn("Weighting for continuous causal states is still experimental! Inferences may be invalid.")
             log_propensities[treatment] = np.log(continuous_treatment_model(data.copy(),
                                                                             covariates + treatments[i+1:],
                                                                             treatment,
@@ -58,7 +58,7 @@ def binary_treatment_model(data, covariates, treatment, variable_types):
 
 def categorical_treatment_model(data, covariates, treatment, variable_types):
     data, covariates = binarize_discrete(data, covariates, variable_types)
-    model = LogisticRegression(multi_class='auto', solver='lbfgs')
+    model = LogisticRegression(multi_class='ovr', solver='lbfgs')
     data[treatment], encoder = discrete_to_integer(data[treatment])
     model = model.fit(data[covariates], data[treatment])
     scores = model.predict_proba(data[covariates])

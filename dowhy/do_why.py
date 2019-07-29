@@ -13,6 +13,7 @@ from dowhy.causal_estimator import CausalEstimate
 from dowhy.causal_graph import CausalGraph
 from dowhy.causal_identifier import CausalIdentifier
 
+from dowhy.utils.api import parse_state
 
 init_printing()  # To display symbolic math symbols
 
@@ -48,8 +49,8 @@ class CausalModel:
 
         """
         self._data = data
-        self._treatment = treatment
-        self._outcome = outcome
+        self._treatment = parse_state(treatment)
+        self._outcome = parse_state(outcome)
         self._estimand_type = estimand_type
         self._proceed_when_unidentifiable = proceed_when_unidentifiable
         if 'logging_level' in kwargs:
@@ -62,8 +63,8 @@ class CausalModel:
 
         if graph is None:
             self.logger.warning("Causal Graph not provided. DoWhy will construct a graph based on data inputs.")
-            self._common_causes = common_causes
-            self._instruments = instruments
+            self._common_causes = parse_state(common_causes)
+            self._instruments = parse_state(instruments)
             if common_causes is not None and instruments is not None:
                 self._graph = CausalGraph(
                     self._treatment,
@@ -106,15 +107,18 @@ class CausalModel:
         self._other_variables = kwargs
         self.summary()
 
-    def identify_effect(self):
+    def identify_effect(self, proceed_when_unidentifiable=None):
         """Identify the causal effect to be estimated, using properties of the causal graph.
 
         :returns: a probability expression for the causal effect if identified, else NULL
 
         """
+        if proceed_when_unidentifiable is None:
+            proceed_when_unidentifiable = self._proceed_when_unidentifiable
+
         self.identifier = CausalIdentifier(self._graph,
                                            self._estimand_type,
-                                           proceed_when_unidentifiable=self._proceed_when_unidentifiable)
+                                           proceed_when_unidentifiable=proceed_when_unidentifiable)
         identified_estimand = self.identifier.identify_effect()
 
         return identified_estimand

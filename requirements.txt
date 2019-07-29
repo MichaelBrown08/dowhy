@@ -1,8 +1,9 @@
-numpy
+numpy>=1.15
 scipy
+statsmodels
 pandas
-networkx
-matplotlib
-sympy
+networkx>=2.0
+matplotlib>=3.0
+sympy>=1.4
 scikit-learn
-pydot
+pydot>=1.4

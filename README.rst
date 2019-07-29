@@ -1,14 +1,29 @@
+|BuildStatus|_ |PyPiVersion|_ |PythonSupport|_
+
+.. |PyPiVersion| image:: https://img.shields.io/pypi/v/dowhy.svg
+.. _PyPiVersion: https://pypi.org/project/dowhy/
+
+.. |PythonSupport| image:: https://img.shields.io/pypi/pyversions/dowhy.svg
+.. _PythonSupport: https://pypi.org/project/dowhy/
+
+.. |BuildStatus| image:: https://dev.azure.com/ms/dowhy/_apis/build/status/microsoft.dowhy?branchName=master
+.. _BuildStatus: https://dev.azure.com/ms/dowhy/_build/latest?definitionId=179&branchName=master
+
 DoWhy | Making causal inference easy
 ====================================
 
-Amit Sharma (`amshar@microsoft.com <mailto:amshar@microsoft.com>`_),
-Emre Kiciman (`emrek@microsoft.com <mailto:emrek@microsoft.com>`_)
+`Amit Sharma <http://www.amitsharma.in>`_,
+`Emre Kiciman <http://www.kiciman.org>`_
 
-`Blog Post <https://www.microsoft.com/en-us/research/blog/dowhy-a-library-for-causal-inference/>`_ | `Docs <http://causalinference.gitlab.io/dowhy/>`_ | Try it in a web browser! |Binder|_
+ Read the `docs <https://microsoft.github.io/dowhy/>`_ | Try it online! |AzureNotebooks|_ |Binder|_ 
+
+.. |AzureNotebooks| image:: https://notebooks.azure.com/launch.svg
+.. _AzureNotebooks: https://notebooks.azure.com/amshar/projects/dowhy/tree/docs/source
 
 .. |Binder| image:: https://mybinder.org/badge_logo.svg
 .. _Binder: https://mybinder.org/v2/gh/microsoft/dowhy/master?filepath=docs%2Fsource%2F
 
+ Blog Posts: `Introducing DoWhy <https://www.microsoft.com/en-us/research/blog/dowhy-a-library-for-causal-inference/>`_ | `Using the Do-sampler <https://medium.com/@akelleh/introducing-the-do-sampler-for-causal-inference-a3296ea9e78d>`_
 
 As computing systems are more frequently and more actively intervening in societally critical domains such as healthcare, education, and governance, it is critical to correctly predict and understand the causal effects of these interventions. Without an A/B test, conventional machine learning methods, built on pattern recognition and correlational analyses, are insufficient for causal reasoning. 
 
@@ -16,7 +31,7 @@ Much like machine learning libraries have done for prediction, **"DoWhy" is a Py
 
 For a quick introduction to causal inference, check out `amit-sharma/causal-inference-tutorial <https://github.com/amit-sharma/causal-inference-tutorial/>`_. We also gave a more comprehensive tutorial at the ACM Knowledge Discovery and Data Mining (`KDD 2018 <http://www.kdd.org/kdd2018/>`_) conference: `causalinference.gitlab.io/kdd-tutorial <http://causalinference.gitlab.io/kdd-tutorial/>`_.
 
-Documentation for DoWhy is available at `causalinference.gitlab.io/dowhy <http://causalinference.gitlab.io/dowhy/>`_.
+Documentation for DoWhy is available at `microsoft.github.io/dowhy <https://microsoft.github.io/dowhy/>`_.
 
 .. i here comment toctree::
 .. i here comment   :maxdepth: 4
@@ -47,7 +62,54 @@ for causal inference, it is hard to compare their assumptions and robustness of 
 3. Automatically tests for the validity of assumptions if possible and assesses
    the robustness of the estimate to violations.
 
+Installation
+-------------
 
+**Requirements**
+
+DoWhy support Python 3+. It requires the following packages:
+
+* numpy
+* scipy
+* scikit-learn
+* pandas
+* networkx  (for analyzing causal graphs)
+* matplotlib (for general plotting)
+* sympy (for rendering symbolic expressions)
+
+Install the latest release using pip. 
+
+.. code:: shell
+   
+   pip install dowhy
+   
+If you prefer the latest dev version, clone this repository and run the following command from the top-most folder of
+the repository.
+
+.. code:: shell
+    
+    python setup.py install
+
+If you face any problems, try installing dependencies manually.
+
+.. code:: shell
+    
+    pip install -r requirements.txt
+
+Optionally, if you wish to input graphs in the dot format, then install pydot (or pygraphviz).
+
+
+For better-looking graphs, you can optionally install pygraphviz. To proceed,
+first install graphviz and then pygraphviz (on Ubuntu and Ubuntu WSL).
+
+.. code:: shell
+
+    sudo apt install graphviz libgraphviz-dev graphviz-dev pkg-config
+    ## from https://github.com/pygraphviz/pygraphviz/issues/71
+    pip install pygraphviz --install-option="--include-path=/usr/include/graphviz" \
+    --install-option="--library-path=/usr/lib/graphviz/"
+
+Keep in mind that pygraphviz installation can be problematic on the latest versions of Python3. Tested to work with Python 3.5.
 
 Sample causal inference analysis in DoWhy
 -------------------------------------------
@@ -79,7 +141,7 @@ DoWhy supports two formats for providing the causal graph: `gml <http://www.fim.
         data=data["df"],
         treatment=data["treatment_name"],
         outcome=data["outcome_name"],
-        graph=data["dot_graph"])
+        graph=data["gml_graph"])
 
     # Identify causal effect and return target estimands
     identified_estimand = model.identify_effect()
@@ -96,9 +158,9 @@ DoWhy stresses on the interpretability of its output. At any point in the analys
 you can inspect the untested assumptions, identified estimands (if any) and the
 estimate (if any). Here's a sample output of the linear regression estimator.
 
-.. image:: docs/images/regression_output.png
+.. image:: https://raw.githubusercontent.com/microsoft/dowhy/master/docs/images/regression_output.png
 
-For detailed code examples, check out `causalinference.gitlab.io/dowhy <http://causalinference.gitlab.io/dowhy/>`_.
+For detailed code examples, check out the Jupyter notebooks in `docs/source/ <https://github.com/microsoft/dowhy/tree/master/docs/source/>`_, or try them online at `Binder <https://mybinder.org/v2/gh/microsoft/dowhy/master?filepath=docs%2Fsource%2F>`_.
 
 
 A High-level Pandas API
@@ -127,7 +189,7 @@ you can use the namespace as follows.
                          outcome='y',
                          common_causes=['X0']).groupby('v').mean().plot(y='y', kind='bar')
 
-.. image:: docs/images/do_barplot.png
+.. image:: https://raw.githubusercontent.com/microsoft/dowhy/master/docs/images/do_barplot.png
 
 The :code:`do` method in the causal namespace generates a random sample from $P(outcome|do(X=x))$ of the
 same length as your data set, and returns this outcome as a new :code:`DataFrame`. You can continue to perform
@@ -136,41 +198,6 @@ for causal outcomes!
 
 The :code:`do` method is built on top of the lower-level :code:`dowhy` objects, so can still take a graph and perform
 identification automatically when you provide a graph instead of :code:`common_causes`.
-
-
-Installation
--------------
-
-**Requirements**
-
-DoWhy support Python 3+. It requires the following packages:
-
-* numpy
-* scipy
-* scikit-learn
-* pandas
-* networkx  (for analyzing causal graphs)
-* matplotlib (for general plotting)
-* sympy (for rendering symbolic expressions)
-
-Install DoWhy and its dependencies by running this from the top-most folder of
-the repo::
-    python setup.py install
-
-If you face any problems, try installing dependencies manually::
-    pip install -r requirements.txt
-
-Optionally, if you wish to input graphs in the dot format, then install pydot (or pygraphviz).
-
-
-For better-looking graphs, you can optionally install pygraphviz. To proceed,
-first install graphviz and then pygraphviz (on Ubuntu and Ubuntu WSL).::
-    sudo apt install graphviz libgraphviz-dev graphviz-dev pkg-config
-    ## from https://github.com/pygraphviz/pygraphviz/issues/71
-    pip install pygraphviz --install-option="--include-path=/usr/include/graphviz" \
-     --install-option="--library-path=/usr/lib/graphviz/"
-
-Keep in mind that pygraphviz installation can be problematic on the latest versions of Python3. Tested to work with Python 3.5.
 
 Graphical Models and Potential Outcomes: Best of both worlds
 ------------------------------------------------------------
@@ -239,8 +266,11 @@ implementations can be combined in any way.
 
 Below are more details about the current implementation of each of these verbs.
 
-Model a causal problem
------------------------
+Four steps of causal inference
+------------------------------
+
+I. **Model a causal problem**
+
 DoWhy creates an underlying causal graphical model for each problem. This
 serves to make each causal assumption explicit. This graph need not be
 complete---you can provide a partial graph, representing prior
@@ -256,14 +286,14 @@ instead of providing a graph.
 
 .. i comment image:: causal_model.png
 
-Identify a target estimand under the model
-------------------------------------------
+II. **Identify a target estimand under the model**
+
 Based on the causal graph, DoWhy finds all possible ways of identifying a desired causal effect based on
 the graphical model. It uses graph-based criteria and do-calculus to find
 potential ways find expressions that can identify the causal effect.
 
-Estimate causal effect based on the identified estimand
--------------------------------------------------------
+III. **Estimate causal effect based on the identified estimand**
+
 DoWhy supports methods based on both back-door criterion and instrumental
 variables. It also provides a non-parametric permutation test for testing
 the statistical significance of obtained estimate. 
@@ -284,8 +314,8 @@ Currently supported methods based on instrumental variables.
 * Regression discontinuity
 
 
-Refute the obtained estimate
-----------------------------
+IV. **Refute the obtained estimate**
+
 Having access to multiple refutation methods to verify a causal inference is
 a key benefit of using DoWhy.
 
@@ -295,6 +325,10 @@ DoWhy supports the following refutation methods.
 * Irrelevant Additional Confounder
 * Subset validation
 
+
+Roadmap 
+-----------
+The `projects <https://github.com/microsoft/dowhy/projects>`_ page lists the next steps for DoWhy. If you would like to contribute, have a look at the current projects. If you have a specific request for DoWhy, please raise an issue `here <https://github.com/microsoft/dowhy/issues>`_.
 
 Contributing
 -------------

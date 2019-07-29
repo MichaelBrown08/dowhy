@@ -22,18 +22,13 @@ with open(path.join(here, 'requirements.txt'), encoding='utf-8') as f:
 
 setup(
     name='dowhy',
-
-    version='0.1.0',
-
-    description='A Python library for causal inference',  # Required
-
+    version='0.1.1',
+    description='DoWhy is a Python library for causal inference that supports explicit modeling and testing of causal assumptions.',  # Required
+    license='MIT',
     long_description=long_description,
-
-    url='https://causalinference.gitlab.io/dowhy',  # Optional
-
+    url='https://github.com/microsoft/dowhy',  # Optional
+    download_url='https://github.com/microsoft/dowhy/archive/v0.1.1-alpha.tar.gz',
     author='Amit Sharma, Emre Kiciman',
-
-
     classifiers=[  # Optional
         'Development Status :: 3 - Alpha',
         'License :: OSI Approved :: MIT License',
@@ -45,11 +40,9 @@ setup(
         'Programming Language :: Python :: 3.7',
     ],
 
-    keywords='causality causal-inference statistics graphical-model',
-
+    keywords='causality machine-learning causal-inference statistics graphical-model',
     packages=find_packages(exclude=['docs', 'tests']),
     python_requires='>=3.0',
-
-    install_requires=install_requires
-
+    install_requires=install_requires,
+    include_package_data=True
 )
