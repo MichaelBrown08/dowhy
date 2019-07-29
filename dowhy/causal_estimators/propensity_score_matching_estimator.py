@@ -24,9 +24,14 @@ class PropensityScoreMatchingEstimator(CausalEstimator):
         propensity_score_model.fit(self._observed_common_causes, self._treatment)
         self._data['propensity_score'] = propensity_score_model.predict(self._observed_common_causes)
 
+        self._data.to_csv("base_data.csv")
+
         # this assumes a binary treatment regime
-        treated = self._data.loc[self._data[self._data[self._treatment_name] == 1].index]
-        control = self._data.loc[self._data[self._data[self._treatment_name] == 0].index]
+        treated = self._data.loc[self._data[self._treatment_name]==1]
+        control = self._data.loc[self._data[self._treatment_name]==0]
+
+        treated.to_csv("base_treated.csv")
+        control.to_csv("base_control.csv")
 
         control_neighbors = (
             NearestNeighbors(n_neighbors=1, algorithm='ball_tree')
@@ -38,13 +43,21 @@ class PropensityScoreMatchingEstimator(CausalEstimator):
 
         # estimate ATE on treated by summing over difference between matched neighbors
         ate = 0
-        numtreatedunits = treated.shape[0]
+        numtreatedunits = control.shape[0]
+        print(f"Numtreatedunits: {numtreatedunits}; len(indices): {len(indices)}.")
+        assert len(indices)==numtreatedunits
         for i in range(numtreatedunits):
             treated_outcome = treated.iloc[i][self._outcome_name].item()
             try:
                 control_outcome = control.iloc[indices[i]][self._outcome_name].item()
-            except:
-                control_outcome = 0
+            except AttributeError:
+                print(f"Attribute error raised at {i}")
+                indices=pd.DataFrame(indices)
+                indices.to_csv("breakpointindices.csv")
+                control.to_csv("breakpoint_control.csv")
+                treated.to_csv("breakpoint_treated.csv")
+                break
+            print(f"Loop {i}; indices {indices[i]}, to: {treated_outcome}, co: {control_outcome}")
             ate += treated_outcome - control_outcome
 
         ate /= numtreatedunits

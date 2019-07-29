@@ -38,8 +38,6 @@ class PropensityScoreWeightingEstimator(CausalEstimator):
         # nips ==> ips / (sum of ips over all units)
         # icps ==> ps(y)/(1-ps(y)) / (sum of (ps(y)/(1-ps(y))) over all control units)
         # itps ==> ps(y)/(1-ps(y)) / (sum of (ps(y)/(1-ps(y))) over all treatment units)
-        print(self._data[self._treatment_name])
-        ipst_sum_p1 = self._data[self._treatment_name].sum()
         ipst_sum = self._data[self._treatment_name].sum() / (self._data['ps'].astype(float))
         ipsc_sum = (1 - self._data[self._treatment_name]).sum() / (1-self._data['ps'].astype(float))
         self._data['ips_weight'] = (
@@ -47,7 +45,7 @@ class PropensityScoreWeightingEstimator(CausalEstimator):
             (1 - self._data[self._treatment_name]) / (1 - self._data['ps']) / ipsc_sum
         )
 
-        ips_sum = self._data['ips_weight'].sum()
+        ips_sum = self._data['ips_weight'].sum()     
         self._data['nips_weight'] = self._data['ips_weight'] / ips_sum
 
         self._data['ips2'] = self._data['ps'] / (1 - self._data['ps'])
