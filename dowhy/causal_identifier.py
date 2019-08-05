@@ -22,7 +22,11 @@ class CausalIdentifier:
         estimands_dict = {}
         causes_t = self._graph.get_causes(self.treatment_name)
         causes_y = self._graph.get_causes(self.outcome_name, remove_edges={'sources':self.treatment_name, 'targets':self.outcome_name})
+        print(f"Causes_t: {causes_t}")
+        print(f"causes_y: {causes_y}")
         common_causes = list(causes_t.intersection(causes_y))
+        print(f"Common Causes: {common_causes}")
+        print(f"Graph fully observed: {self._graph.all_observed(common_causes)}")
         self.logger.info("Common causes of treatment and outcome:" + str(common_causes))
         if self._graph.all_observed(common_causes):
             self.logger.info("All common causes are observed. Causal effect can be identified.")
