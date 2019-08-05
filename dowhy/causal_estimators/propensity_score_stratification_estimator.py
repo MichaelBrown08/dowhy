@@ -64,37 +64,22 @@ class PropensityScoreStratificationEstimator(CausalEstimator):
 
         stratified = self._data.groupby('strata')
         clipped = stratified.filter(
-<<<<<<< HEAD
             lambda strata: min(strata.loc[strata[strata[self._treatment_name] == 1].index].shape[0],
                                strata.loc[strata[strata[self._treatment_name] == 0].index].shape[0]) > self.clipping_threshold)
 
         # sum weighted outcomes over all strata  (weight by treated population) 
         weighted_outcomes = clipped.groupby('strata').agg({self._treatment_name: np.sum, 'dbar': np.sum, 'd_y': np.sum,'dbar_y': np.sum})
         weighted_outcomes.columns = [x+"_sum" for x in weighted_outcomes.columns]
-        weighted_outcomes.to_csv("weightedoutcomes.csv")
-=======
-            lambda strata: min(strata.loc[strata[self._treatment_name] == 1].shape[0],
-                               strata.loc[strata[self._treatment_name] == 0].shape[0]) > self.clipping_threshold
-        )
-        # print("after clipping at threshold, now we have:" )
-        #print(clipped.groupby(['strata',self._treatment_name])[self._outcome_name].count())
 
-        # sum weighted outcomes over all strata  (weight by treated population)
-        weighted_outcomes = clipped.groupby('strata').agg({
-            self._treatment_name: ['sum'],
-            'dbar': ['sum'],
-            'd_y': ['sum'],
-            'dbar_y': ['sum']
-        })
-        weighted_outcomes.columns = ["_".join(x) for x in weighted_outcomes.columns.ravel()]
->>>>>>> 481523ea1c3a938d2308ae6e9f0c9ea15b77c8eb
         treatment_sum_name = self._treatment_name + "_sum"
 
         weighted_outcomes['d_y_mean'] = weighted_outcomes['d_y_sum'] / weighted_outcomes[treatment_sum_name]
         weighted_outcomes['dbar_y_mean'] = weighted_outcomes['dbar_y_sum'] / weighted_outcomes['dbar_sum']
         weighted_outcomes['effect'] = weighted_outcomes['d_y_mean'] - weighted_outcomes['dbar_y_mean']
         total_treatment_population = weighted_outcomes[treatment_sum_name].sum()
-
+		
+		weighted_outcomes.to_csv("weightedoutcomes.csv")
+		
         ate = (weighted_outcomes['effect'] * weighted_outcomes[treatment_sum_name]).sum() / total_treatment_population
         # TODO - how can we add additional information into the returned estimate?
         #        such as how much clipping was done, or per-strata info for debugging?
