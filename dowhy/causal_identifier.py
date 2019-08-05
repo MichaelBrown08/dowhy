@@ -35,7 +35,7 @@ class CausalIdentifier:
             else:
                 cli.query_yes_no(
                     "WARN: Do you want to continue by ignoring these unobserved confounders?",
-                    default=None
+                    default="y"
                 )
         observed_common_causes = self._graph.filter_unobserved_variables(common_causes)
         observed_common_causes = list(observed_common_causes)
