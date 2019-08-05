@@ -78,7 +78,7 @@ class PropensityScoreStratificationEstimator(CausalEstimator):
         weighted_outcomes['effect'] = weighted_outcomes['d_y_mean'] - weighted_outcomes['dbar_y_mean']
         total_treatment_population = weighted_outcomes[treatment_sum_name].sum()
 		
-		weighted_outcomes.to_csv("weightedoutcomes.csv")
+        weighted_outcomes.to_csv("weightedoutcomes.csv")
 		
         ate = (weighted_outcomes['effect'] * weighted_outcomes[treatment_sum_name]).sum() / total_treatment_population
         # TODO - how can we add additional information into the returned estimate?
